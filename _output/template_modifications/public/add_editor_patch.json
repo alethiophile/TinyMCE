@@ -1,0 +1,9 @@
+{
+    "template": "editor",
+    "description": "Serve the patch_editor JS file and pass its configuration.",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<!--[XF:include_js]-->",
+    "replace": "\t<script class=\"js-editorSelect\" type=\"text/javascript\">\n\t\tvar tinymce_selected_editor = \"{{ $xf.visitor.Profile.custom_fields.editor_select }}\";\n\t\tvar tinymce_default_editor = \"{{ $xf.options.default_editor}}\";\n\t</script>\n\t<xf:js src=\"patch_editor.js\" addon=\"QQ/TinyMCE\" />\n    $0"
+}

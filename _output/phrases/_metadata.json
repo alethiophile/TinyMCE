@@ -1,0 +1,26 @@
+{
+    "option.default_editor.txt": {
+        "global_cache": false,
+        "version_id": 110,
+        "version_string": "0.0.1 Alpha",
+        "hash": "2130870678b7f5b3a565e6a72bf6eaf0"
+    },
+    "option_explain.default_editor.txt": {
+        "global_cache": false,
+        "version_id": 110,
+        "version_string": "0.0.1 Alpha",
+        "hash": "d65f4fa59bfe167d520360b94bb2e9e7"
+    },
+    "option_group.rich_text_editor.txt": {
+        "global_cache": false,
+        "version_id": 110,
+        "version_string": "0.0.1 Alpha",
+        "hash": "1e7bc03430ad55d5d282301c5b978a64"
+    },
+    "option_group_description.rich_text_editor.txt": {
+        "global_cache": false,
+        "version_id": 110,
+        "version_string": "0.0.1 Alpha",
+        "hash": "d32be50aa34007bbaf0fbc4a5fc8cd77"
+    }
+}

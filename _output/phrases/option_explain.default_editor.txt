@@ -1,0 +1,1 @@
+Which rich-text editor is used for users who haven't configured one specifically.

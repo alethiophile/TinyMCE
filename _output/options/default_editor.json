@@ -1,0 +1,13 @@
+{
+    "edit_format": "select",
+    "edit_format_params": "froala=Froala (XF 2 default)\ntinymce=TinyMCE\ntextarea=Disable rich text",
+    "data_type": "string",
+    "sub_options": [],
+    "validation_class": "",
+    "validation_method": "",
+    "advanced": false,
+    "default_value": "froala",
+    "relations": {
+        "rich_text_editor": 1
+    }
+}
