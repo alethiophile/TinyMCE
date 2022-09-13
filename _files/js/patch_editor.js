@@ -1,4 +1,4 @@
-/* global jQuery, XF */
+/* global jQuery, XF, tinymce */
 
 !function($, window, document, _undefined)
 {
@@ -10,7 +10,6 @@
             return false;
         }
         let data = $config.first().html();
-        // console.log(data);
         editor_config = $.parseJSON(data);
         return true;
     }
@@ -43,12 +42,11 @@
     // config becomes available, deferred initializations are carried out.
 
     function do_patch() {
-        XF.Element.extend('editor', {
-            __backup: {
-                'startInit': 'startInit_froala',
-                'blur': 'blur_froala',
-            },
-
+        let backup = { 'startInit': 'startInit_froala' };
+        let ext_obj = {
+            // the startInit dispatch function differs from the others in that
+            // it does deferred init handling; thus, it's written individually,
+            // but all others are closures created by the add_dispatch function
             startInit: function () {
                 let ed = get_active_editor();
                 if (ed == null) {
@@ -63,59 +61,71 @@
             startInit_textarea: function () {
                 console.log("textarea startInit");
                 let bbcode_data = this.$target.nextAll('input[type="hidden"]').val();
-                // console.log(bbcode_data);
+                let t = this;
+                // This emulates the Froala editor's API for one function where
+                // core code reaches into it.
+                this.ed = {
+                    bbCode: {
+                        getTextArea: function () {
+                            return t.$target;
+                        }
+                    },
+                }
                 this.$target.val(bbcode_data);
                 this.$target.css('visibility', 'visible');
             },
 
-            blur: function () {
-                let ed = get_active_editor();
-                if (ed == null) {
-                    return;
-                }
-                let disp = 'blur_' + ed;
-                return this[disp]();
+            startInit_tinymce: function () {
+                tinymce.init({
+                    target: this.$target[0],
+                    base_url: '/js/vendor/tinymce'
+                }).then((editors) => {
+                    this.ed = editors[0];
+                });
             },
 
             blur_textarea: function () {
                 this.$target[0].blur();
+            },
+
+            blur_tinymce: function () {
+                // I'm not sure if this call is actually doing anything, but the
+                // element does lose focus
+                this.ed.getElement().blur();
+            },
+
+            isBbCodeView_textarea: function () {
+                return true;
+            },
+
+            isBbCodeView_tinymce: function () {
+                return false;
+            },
+
+            insertContent_tinymce: function (content) {
+                this.ed.insertContent(content);
+            },
+
+            replaceContent_tinymce: function (content) {
+                this.ed.setContent(content);
             }
-        });
-        XF.modifyEditorContent_froala = XF.modifyEditorContent;
-        $.extend(XF, {
-            modifyEditorContent: function () {
+        };
+        function add_dispatch(fn) {
+            backup[fn] = fn + '_froala';
+            ext_obj[fn] = function () {
                 let ed = get_active_editor();
                 if (ed == null) {
                     return;
                 }
-                let disp = 'modifyEditorContent_' + ed;
+                let disp = fn + '_' + ed;
                 return this[disp].apply(this, arguments);
-            },
-            modifyEditorContent_textarea: function($container, htmlCallback, textCallback, notConstraints)
-            {
-                var editor = XF.getEditorInContainer($container, notConstraints);
-                if (!editor)
-                {
-                    return false;
-                }
-
-                if (XF.Editor && editor instanceof XF.Editor)
-                {
-                    var textarea = editor.$target;
-                    textCallback(textarea);
-                    textarea.trigger('autosize');
-                    return true;
-                }
-
-                if (editor instanceof $ && editor.is('textarea'))
-                {
-                    textCallback(editor);
-                    editor.trigger('autosize');
-                    return true;
-                }
-                return false;
-            },
-        });
+            };
+        }
+        for (let i of ['blur', 'isBbCodeView', 'insertContent', 'replaceContent']) {
+            add_dispatch(i)
+        }
+        ext_obj.__backup = backup;
+        XF.Element.extend('editor', ext_obj);
     }
 
     console.log("patch_editor");
