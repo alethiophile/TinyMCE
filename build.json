@@ -1,5 +1,6 @@
 {
     "additional_files": [
-        "js/patch_editor.js"
+        "js/patch_editor.js",
+        "js/vendor/tinymce"
     ]
 }
