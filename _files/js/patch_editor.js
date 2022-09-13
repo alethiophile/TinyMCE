@@ -2,22 +2,96 @@
 
 !function($, window, document, _undefined)
 {
-    function patch_for_textarea() {
+    let editor_config = null;
+    function load_config() {
+        console.log("checking config");
+        let $config = $('.js-editorSelect');
+        if (!$config.length) {
+            return false;
+        }
+        let data = $config.first().html();
+        // console.log(data);
+        editor_config = $.parseJSON(data);
+        return true;
+    }
+
+    function get_active_editor() {
+        if (editor_config === null) {
+            return null;
+        }
+        let active_editor = editor_config.selected_editor != "" ?
+            editor_config.selected_editor :
+            editor_config.default_editor != "" ?
+            editor_config.default_editor : 'froala';
+        return active_editor;
+    }
+
+    let deferred_inits = [];
+
+    // This patching function patches the frontend objects such that the
+    // original methods are renamed with the _froala postfix, then replaced with
+    // dispatch methods. The dispatch methods query the editor config to
+    // determine the active editor, then invoke the appropriate postfixed method
+    // (_froala, _tinymce or _textarea).
+
+    // Because the editor config is passed as a JSON object and parsed in code,
+    // it's possible that the config may not be available before the editor
+    // elements are initialized. In this case, the dispatch methods generally
+    // act as no-ops. The exception is for the startInit dispatch method that
+    // handles editor setup: in this case, if config is not available at call
+    // time, the object is added to a list for deferred initialization. After
+    // config becomes available, deferred initializations are carried out.
+
+    function do_patch() {
         XF.Element.extend('editor', {
+            __backup: {
+                'startInit': 'startInit_froala',
+                'blur': 'blur_froala',
+            },
+
             startInit: function () {
+                let ed = get_active_editor();
+                if (ed == null) {
+                    let t = this;
+                    deferred_inits.push(t);
+                    return;
+                }
+                let disp = 'startInit_' + ed;
+                return this[disp]();
+            },
+
+            startInit_textarea: function () {
+                console.log("textarea startInit");
                 let bbcode_data = this.$target.nextAll('input[type="hidden"]').val();
-                console.log(bbcode_data);
+                // console.log(bbcode_data);
                 this.$target.val(bbcode_data);
                 this.$target.css('visibility', 'visible');
             },
 
             blur: function () {
+                let ed = get_active_editor();
+                if (ed == null) {
+                    return;
+                }
+                let disp = 'blur_' + ed;
+                return this[disp]();
+            },
+
+            blur_textarea: function () {
                 this.$target[0].blur();
             }
         });
-
+        XF.modifyEditorContent_froala = XF.modifyEditorContent;
         $.extend(XF, {
-            modifyEditorContent: function($container, htmlCallback, textCallback, notConstraints)
+            modifyEditorContent: function () {
+                let ed = get_active_editor();
+                if (ed == null) {
+                    return;
+                }
+                let disp = 'modifyEditorContent_' + ed;
+                return this[disp].apply(this, arguments);
+            },
+            modifyEditorContent_textarea: function($container, htmlCallback, textCallback, notConstraints)
             {
                 var editor = XF.getEditorInContainer($container, notConstraints);
                 if (!editor)
@@ -44,71 +118,11 @@
         });
     }
 
-    function patch_for_tinymce() {
-        
-    }
-
-    let editor_config = null;
-    function load_config() {
-        console.log("checking config");
-        let $config = $('.js-editorSelect');
-        if (!$config.length) {
-            return false;
-        }
-        let data = $config.first().html();
-        console.log(data);
-        editor_config = $.parseJSON(data);
-        return true;
-    }
-
-    let deferred_inits = [];
-    let patch_done = false;
-
-    // The motivation for all this silliness is that 1. we have to pass the
-    // editor config as a JSON object that gets parsed in-script, rather than a
-    // JS inline script, because under some circumstances a JS inline script
-    // won't be loaded. But 2. sometimes, this script will run before the
-    // element containing the JSON config has loaded. Thus, we have to wait
-    // until the config is loaded before we know how to patch the editor. But
-    // 3. if we wait, sometimes the editor init() will run before we can patch
-    // it, causing things to break. (This is an unpredictable race condition.)
-    // Thus, we patch the editor twice: once immediately at script load,
-    // replacing the init() function with one that defers execution until after
-    // the full patch is completed; then again after the config is available,
-    // doing the full functional editor patch and running any deferred init()
-    // calls.
-    
-    function patch_defer_init() {
-        // This patches the editor element so that its init() function will
-        // never run before the config is loaded. It is run immediately on
-        // script load, hopefully before any element is init()'d. Calls to
-        // init() that happen before the config is loaded will be deferred until
-        // afterward.
-        XF.Element.extend('editor', {
-            __backup: {
-                'init': '_init'
-            },
-
-            init: function () {
-                console.log("checking deferred init");
-                let t = this;
-                if (patch_done) {
-                    t._init();
-                }
-                else {
-                    deferred_inits.push(function () {
-                        t._init();
-                    });
-                }
-            }
-        });
-    }
-
     console.log("patch_editor");
-    patch_defer_init();
+    do_patch();
 
     let wait_until_exist = null;
-    let check_and_patch = function () {
+    let check_config_load = function () {
         load_config();
         if (editor_config === null) {
             return false;
@@ -116,26 +130,15 @@
         if (wait_until_exist !== null) {
             clearInterval(wait_until_exist);
         }
-        let active_editor = editor_config.selected_editor != "" ?
-            editor_config.selected_editor : editor_config.default_editor;
-        console.log(active_editor);
-        if (active_editor == 'textarea') {
-            console.log("patching for textarea");
-            patch_for_textarea();
-        }
-        else if (active_editor == 'tinymce') {
-            patch_for_tinymce();
-        }
-        patch_done = true;
-        for (let f of deferred_inits) {
-            f();
+        for (let i of deferred_inits) {
+            i.startInit();
         }
         deferred_inits = [];
         return true;
     };
 
-    if (!check_and_patch()) {
-        wait_until_exist = setInterval(check_and_patch, 100);
+    if (!check_config_load()) {
+        wait_until_exist = setInterval(check_config_load, 100);
     }
 }
 (jQuery, window, document);
