@@ -1,0 +1,6 @@
+* Todo items
+
+ - [ ] Handle draft saving
+ - [ ] Implement ctrl-enter shortcut to submit post
+ - [ ] Tie in with custom BBcodes somehow
+ - [ ] Figure out how attachments work (?)
