@@ -78,9 +78,21 @@
             startInit_tinymce: function () {
                 tinymce.init({
                     target: this.$target[0],
-                    base_url: '/js/vendor/tinymce'
+                    base_url: '/js/vendor/tinymce',
+                    promotion: false,
+                    plugins: 'fullscreen wordcount'
                 }).then((editors) => {
                     this.ed = editors[0];
+                    this.setupEditor_tinymce();
+                });
+            },
+
+            setupEditor_tinymce: function () {
+                let t = this,
+                    ed = this.editor;
+
+                ed.on('ResizeEditor', function () {
+                    XF.layoutChange();
                 });
             },
 
@@ -121,7 +133,9 @@
                 return this[disp].apply(this, arguments);
             };
         }
-        for (let i of ['blur', 'isBbCodeView', 'insertContent', 'replaceContent']) {
+        let methods_to_patch =
+            ['blur', 'isBbCodeView', 'insertContent', 'replaceContent'];
+        for (let i of methods_to_patch) {
             add_dispatch(i)
         }
         ext_obj.__backup = backup;
