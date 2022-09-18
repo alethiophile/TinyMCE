@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template_modifications>
+  <modification type="public" template="editor" modification_key="add_editor_patch" description="Serve the patch_editor JS file and pass its configuration." execution_order="10" enabled="1" action="str_replace">
+    <find><![CDATA[<!--[XF:include_js]-->]]></find>
+    <replace><![CDATA[	<script class="js-editorSelect" type="application/json">{ "selected_editor": "{{ $xf.visitor.Profile.custom_fields.editor_select }}",
+		"default_editor": "{{ $xf.options.default_editor}}" }</script>
+	<xf:js src="patch_editor.js" addon="QQ/TinyMCE" />
+    <xf:js src="vendor/tinymce/tinymce.min.js" addon="QQ/TinyMCE" />
+    $0]]></replace>
+  </modification>
+</template_modifications>

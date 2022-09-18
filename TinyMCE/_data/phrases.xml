@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phrases>
+  <phrase title="option.default_editor" version_id="110" version_string="0.0.1 Alpha"><![CDATA[Default editor]]></phrase>
+  <phrase title="option_explain.default_editor" version_id="110" version_string="0.0.1 Alpha"><![CDATA[Which rich-text editor is used for users who haven't configured one specifically.]]></phrase>
+  <phrase title="option_group.rich_text_editor" version_id="110" version_string="0.0.1 Alpha"><![CDATA[Editor options]]></phrase>
+  <phrase title="option_group_description.rich_text_editor" version_id="110" version_string="0.0.1 Alpha"><![CDATA[Options concerning the rich-text editor.]]></phrase>
+</phrases>

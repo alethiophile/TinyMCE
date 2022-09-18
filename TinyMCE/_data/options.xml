@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<options>
+  <option option_id="default_editor" edit_format="select" data_type="string" advanced="0">
+    <default_value>froala</default_value>
+    <edit_format_params>froala=Froala (XF 2 default)
+tinymce=TinyMCE
+textarea=Disable rich text</edit_format_params>
+    <relation group_id="rich_text_editor" display_order="1"/>
+  </option>
+</options>
