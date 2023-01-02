@@ -3,4 +3,18 @@
  - [ ] Handle draft saving
  - [ ] Implement ctrl-enter shortcut to submit post
  - [ ] Tie in with custom BBcodes somehow
+   - or maybe don't? it seems the default editor doesn't either...
  - [ ] Figure out how attachments work (?)
+ - [ ] Add rich-text/BBcode switch
+ - [ ] Add preview function
+ - [ ] Harmonize list of fonts
+ - [ ] Redo font-size options to parse properly
+ - [ ] Remove options that don't parse
+   - [ ] super/sub
+   - [ ] background color
+   - [ ] <pre>
+ - [ ] test copy/paste with rich text
+ - [ ] Decide on final layout (menus y/n?)
+   - probably good to somewhat imitate the existing QQ TinyMCE
+ - [ ] Choose TinyMCE skin according to style in use
+   - can just use the 'styleType' style property, which is 'light' or 'dark'
