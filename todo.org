@@ -5,7 +5,7 @@
  - [ ] Tie in with custom BBcodes somehow
    - or maybe don't? it seems the default editor doesn't either...
  - [ ] Figure out how attachments work (?)
- - [ ] Add rich-text/BBcode switch
+ - [X] Add rich-text/BBcode switch
  - [ ] Add preview function
  - [ ] Harmonize list of fonts
  - [ ] Redo font-size options to parse properly

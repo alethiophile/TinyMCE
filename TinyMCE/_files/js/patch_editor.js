@@ -79,6 +79,61 @@
                 let style_mode = editor_config.editor_skin;
                 let mce_skin = style_mode == 'dark' ? 'oxide-dark' : 'oxide';
                 let content_css = style_mode == 'dark' ? 'dark' : 'default';
+                let xf_ed = this;
+                // let mce_skin = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
+                // let content_css = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
+
+                function setup_editor(ed) {
+                    ed.on('ResizeEditor', function () {
+                        XF.layoutChange();
+                    });
+
+                    ed.ui.registry.addIcon(
+                        'bbCodeView',
+                        '<svg width="24" height="24"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">[&nbsp;&nbsp;]</text></svg>'
+                    );
+                    ed.ui.registry.addButton('bbCodeViewButton', {
+                        icon: 'bbCodeView',
+                        tooltip: "Edit BB-code directly",
+                        onAction: function () {
+                            console.log("bb-code button pressed");
+
+                            function to_bbcode(bbcode) {
+                                ed.hide();
+                                xf_ed.$target.css("visibility", "visible").val(bbcode);
+                                let $richtext_button = $(`<button class="button button--primary tinymce_richtext_button"><span class="button-text">Rich text editor</span></button>`);
+                                $richtext_button.css('margin-right', '4px');
+                                xf_ed.$target.parent().find('button[type=submit]').before($richtext_button);
+                                $richtext_button.click(function (e) {
+                                    // for some reason if I don't do this then it submits the form and posts the reply (???)
+                                    e.preventDefault();
+                                    let bbcode = xf_ed.$target.val();
+                                    XF.ajax(
+                                        'POST',
+                                        XF.canonicalizeUrl('index.php?editor/to-html'),
+                                        { bb_code: bbcode },
+                                        (data) => { to_richtext(data.editorHtml); }
+                                    );
+                                });
+                            }
+
+                            function to_richtext(html) {
+                                ed.show();
+                                ed.setContent(html);
+                                xf_ed.$target.parent().find('button.tinymce_richtext_button').remove();
+                            }
+
+                            let html = ed.getContent();
+                            XF.ajax(
+                                'POST',
+                                XF.canonicalizeUrl('index.php?editor/to-bb-code'),
+                                { html: html },
+                                (data) => { to_bbcode(data.bbCode); }
+                            );
+                        },
+                    });
+                }
+
                 tinymce.init({
                     target: this.$target[0],
                     base_url: '/js/vendor/tinymce',
@@ -86,19 +141,11 @@
                     branding: false,
                     skin: mce_skin,
                     content_css: content_css,
-                    plugins: 'fullscreen wordcount'
+                    plugins: 'fullscreen wordcount',
+                    toolbar: 'bbCodeViewButton',
+                    setup: setup_editor
                 }).then((editors) => {
                     this.ed = editors[0];
-                    this.setupEditor_tinymce();
-                });
-            },
-
-            setupEditor_tinymce: function () {
-                let t = this,
-                    ed = this.editor;
-
-                ed.on('ResizeEditor', function () {
-                    XF.layoutChange();
                 });
             },
 
