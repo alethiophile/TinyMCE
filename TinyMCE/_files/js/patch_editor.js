@@ -76,10 +76,16 @@
             },
 
             startInit_tinymce: function () {
+                let style_mode = editor_config.editor_skin;
+                let mce_skin = style_mode == 'dark' ? 'oxide-dark' : 'oxide';
+                let content_css = style_mode == 'dark' ? 'dark' : 'default';
                 tinymce.init({
                     target: this.$target[0],
                     base_url: '/js/vendor/tinymce',
                     promotion: false,
+                    branding: false,
+                    skin: mce_skin,
+                    content_css: content_css,
                     plugins: 'fullscreen wordcount'
                 }).then((editors) => {
                     this.ed = editors[0];

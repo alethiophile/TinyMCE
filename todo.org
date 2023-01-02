@@ -16,5 +16,5 @@
  - [ ] test copy/paste with rich text
  - [ ] Decide on final layout (menus y/n?)
    - probably good to somewhat imitate the existing QQ TinyMCE
- - [ ] Choose TinyMCE skin according to style in use
+ - [X] Choose TinyMCE skin according to style in use
    - can just use the 'styleType' style property, which is 'light' or 'dark'

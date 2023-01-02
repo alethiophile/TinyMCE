@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<!--[XF:include_js]-->",
-    "replace": "\t<script class=\"js-editorSelect\" type=\"application/json\">{ \"selected_editor\": \"{{ $xf.visitor.Profile.custom_fields.editor_select }}\",\n\t\t\"default_editor\": \"{{ $xf.options.default_editor}}\" }</script>\n\t<xf:js src=\"patch_editor.js\" addon=\"QQ/TinyMCE\" />\n    <xf:js src=\"vendor/tinymce/tinymce.min.js\" addon=\"QQ/TinyMCE\" />\n    $0"
+    "replace": "\t<script class=\"js-editorSelect\" type=\"application/json\">{ \"selected_editor\": \"{{ $xf.visitor.Profile.custom_fields.editor_select }}\",\n\t\t\"default_editor\": \"{{ $xf.options.default_editor}}\",\n\t\t\"editor_skin\": \"{{ property('styleType') }}\" }</script>\n\t<xf:js src=\"patch_editor.js\" addon=\"QQ/TinyMCE\" />\n    <xf:js src=\"vendor/tinymce/tinymce.min.js\" addon=\"QQ/TinyMCE\" />\n    $0"
 }
