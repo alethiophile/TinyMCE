@@ -102,6 +102,7 @@
                                 let $richtext_button = $(`<button class="button button--primary tinymce_richtext_button"><span class="button-text">Rich text editor</span></button>`);
                                 $richtext_button.css('margin-right', '4px');
                                 xf_ed.$target.parent().find('button[type=submit]').before($richtext_button);
+                                xf_ed.$target.closest('form').on('submit', reset_state);
                                 $richtext_button.click(function (e) {
                                     // for some reason if I don't do this then it submits the form and posts the reply (???)
                                     e.preventDefault();
@@ -115,10 +116,17 @@
                                 });
                             }
 
+                            function reset_state() {
+                                to_richtext(null);
+                            }
+
                             function to_richtext(html) {
                                 ed.show();
-                                ed.setContent(html);
+                                if (html !== null) {
+                                    ed.setContent(html);
+                                }
                                 xf_ed.$target.parent().find('button.tinymce_richtext_button').remove();
+                                xf_ed.$target.closest('form').off('submit', reset_state);
                             }
 
                             let html = ed.getContent();
