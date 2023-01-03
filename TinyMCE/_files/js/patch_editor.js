@@ -139,8 +139,55 @@
                         },
                     });
 
+                    ed.ui.registry.addButton('previewButton', {
+                        text: 'Preview',
+                        tooltip: 'Show a preview of your post',
+                        onAction: function () {
+                            function show_preview(html) {
+                                ed.hide();
+                                xf_ed.$target.css('display', 'none');
+                                let $preview_div = $(`<div class="tinymce_preview_area"><h3>Preview:</h3><div class="inner_content"></div><hr></div>`);
+                                xf_ed.$target.parent().find('div.formButtonGroup').before($preview_div);
+                                $preview_div.find('.inner_content').css({
+                                    'margin': '5px',
+                                }).html(html);
+                                let $edit_button = $(`<button class="button button--primary tinymce_edit_button"><span class="button-text">Return to editor</span></button>`);
+                                $edit_button.css('margin-right', '4px');
+                                xf_ed.$target.parent().find('button[type=submit]').before($edit_button);
+                                xf_ed.$target.closest('form').on('submit', hide_preview);
+                                $edit_button.click(function (e) {
+                                    e.preventDefault();
+                                    hide_preview();
+                                });
+                            }
+
+                            function hide_preview() {
+                                xf_ed.$target.parent().find('div.tinymce_preview_area').remove();
+                                xf_ed.$target.parent().find('button.tinymce_edit_button').remove();
+                                xf_ed.$target.closest('form').off('submit', hide_preview);
+                                xf_ed.$target.css('display', '');
+                                ed.show();
+                            }
+
+                            ed.save();
+                            let $form = xf_ed.$target.closest('form');
+                            let form_data = XF.getDefaultFormData($form);
+                            let preview_url = xf_ed.$target.data('preview-url') ? xf_ed.$target.data('preview-url') : $form.data('preview-url');
+
+                            XF.ajax(
+                                'POST',
+                                XF.canonicalizeUrl(preview_url),
+                                form_data,
+                                function (data) {
+                                    XF.setupHtmlInsert(data.html, function ($html) {
+                                        XF.activate($html);
+                                        show_preview($html.find('.bbWrapper'));
+                                    });
+                                });
+                        }
+                    });
+
                     ed.on('keydown', function(e) {
-                        console.log(e);
                         if (e.key == 'Enter' && e.ctrlKey) {
                             e.preventDefault();
                             ed.save();
@@ -158,7 +205,7 @@
                     skin: mce_skin,
                     content_css: content_css,
                     plugins: 'fullscreen wordcount',
-                    toolbar: 'bbCodeViewButton',
+                    toolbar: 'bbCodeViewButton previewButton',
                     setup: setup_editor
                 }).then((editors) => {
                     this.ed = editors[0];
