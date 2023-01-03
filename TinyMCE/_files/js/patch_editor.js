@@ -96,8 +96,6 @@
                         icon: 'bbCodeView',
                         tooltip: "Edit BB-code directly",
                         onAction: function () {
-                            console.log("bb-code button pressed");
-
                             function to_bbcode(bbcode) {
                                 ed.hide();
                                 xf_ed.$target.css("visibility", "visible").val(bbcode);
@@ -131,6 +129,16 @@
                                 (data) => { to_bbcode(data.bbCode); }
                             );
                         },
+                    });
+
+                    ed.on('keydown', function(e) {
+                        console.log(e);
+                        if (e.key == 'Enter' && e.ctrlKey) {
+                            e.preventDefault();
+                            ed.save();
+                            xf_ed.$target.closest('form').submit();
+                            return false;
+                        }
                     });
                 }
 
