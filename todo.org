@@ -1,6 +1,6 @@
 * Todo items
 
- - [ ] Handle draft saving
+ - [X] Handle draft saving
  - [X] Implement ctrl-enter shortcut to submit post
  - [ ] Tie in with custom BBcodes somehow
    - or maybe don't? it seems the default editor doesn't either...

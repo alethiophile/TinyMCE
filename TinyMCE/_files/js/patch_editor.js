@@ -187,6 +187,14 @@
                         }
                     });
 
+                    function handle_draft() {
+                        let $form = xf_ed.$target.closest('form');
+                        let draftHandler = XF.Element.getHandler($form, 'draft');
+                        ed.save();
+                        draftHandler.triggerSave();
+                    }
+
+                    let draft_timeout = null;
                     ed.on('keydown', function(e) {
                         if (e.key == 'Enter' && e.ctrlKey) {
                             e.preventDefault();
@@ -194,6 +202,10 @@
                             xf_ed.$target.closest('form').submit();
                             return false;
                         }
+                        if (draft_timeout !== null) {
+                            clearTimeout(draft_timeout);
+                        }
+                        draft_timeout = setTimeout(handle_draft, 2500);
                     });
                 }
 
