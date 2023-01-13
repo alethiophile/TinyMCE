@@ -114,6 +114,7 @@
                                         (data) => { to_richtext(data.editorHtml); }
                                     );
                                 });
+                                XF.layoutChange();
                             }
 
                             function reset_state() {
@@ -127,6 +128,7 @@
                                 }
                                 xf_ed.$target.closest('form').find('button.tinymce_richtext_button').remove();
                                 xf_ed.$target.closest('form').off('submit', reset_state);
+                                XF.layoutChange();
                             }
 
                             let html = ed.getContent();
@@ -159,6 +161,7 @@
                                     e.preventDefault();
                                     hide_preview();
                                 });
+                                XF.layoutChange();
                             }
 
                             function hide_preview() {
@@ -167,6 +170,7 @@
                                 xf_ed.$target.closest('form').off('submit', hide_preview);
                                 xf_ed.$target.css('display', '');
                                 ed.show();
+                                XF.layoutChange();
                             }
 
                             ed.save();
