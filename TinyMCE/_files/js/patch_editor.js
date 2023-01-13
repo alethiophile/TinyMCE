@@ -95,6 +95,35 @@
                         }
                     };
 
+                    function save_if_necessary() {
+                        if (!xf_ed.bbCodeView) {
+                            ed.save();
+                        }
+                    }
+
+                    function handle_draft() {
+                        let $form = xf_ed.$target.closest('form');
+                        let draftHandler = XF.Element.getHandler($form, 'draft');
+                        save_if_necessary();
+                        draftHandler.triggerSave();
+                    }
+
+                    function ed_keydown (e) {
+                        if (e.key == 'Enter' && e.ctrlKey) {
+                            e.preventDefault();
+                            save_if_necessary();
+                            xf_ed.$target.closest('form').submit();
+                            return false;
+                        }
+                        if (draft_timeout !== null) {
+                            clearTimeout(draft_timeout);
+                        }
+                        draft_timeout = setTimeout(handle_draft, 2500);
+                    }
+
+                    let draft_timeout = null;
+                    ed.on('keydown', ed_keydown);
+
                     ed.ui.registry.addIcon(
                         'bbCodeView',
                         '<svg width="24" height="24"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-weight="950">[&nbsp;&nbsp;]</text></svg>'
@@ -110,6 +139,7 @@
                                 $richtext_button.css('margin-top', '6px');
                                 xf_ed.$target.after($richtext_button);
                                 xf_ed.$target.closest('form').on('submit', reset_state);
+                                xf_ed.$target.attr('name', 'message');
                                 $richtext_button.click(function (e) {
                                     // for some reason if I don't do this then it submits the form and posts the reply (???)
                                     e.preventDefault();
@@ -121,6 +151,7 @@
                                         (data) => { to_richtext(data.editorHtml); }
                                     );
                                 });
+                                xf_ed.$target.on('keydown', ed_keydown);
                                 XF.layoutChange();
                                 xf_ed.bbCodeView = true;
                             }
@@ -136,6 +167,8 @@
                                 }
                                 xf_ed.$target.closest('form').find('button.tinymce_richtext_button').remove();
                                 xf_ed.$target.closest('form').off('submit', reset_state);
+                                xf_ed.$target.off('keydown', ed_keydown);
+                                xf_ed.$target.attr('name', 'message_html');
                                 XF.layoutChange();
                                 xf_ed.bbCodeView = false;
                             }
@@ -183,7 +216,7 @@
                                 XF.layoutChange();
                             }
 
-                            ed.save();
+                            save_if_necessary();
                             let $form = xf_ed.$target.closest('form');
                             let form_data = XF.getDefaultFormData($form);
                             let preview_url = xf_ed.$target.data('preview-url') ? xf_ed.$target.data('preview-url') : $form.data('preview-url');
@@ -201,26 +234,6 @@
                         }
                     });
 
-                    function handle_draft() {
-                        let $form = xf_ed.$target.closest('form');
-                        let draftHandler = XF.Element.getHandler($form, 'draft');
-                        ed.save();
-                        draftHandler.triggerSave();
-                    }
-
-                    let draft_timeout = null;
-                    ed.on('keydown', function(e) {
-                        if (e.key == 'Enter' && e.ctrlKey) {
-                            e.preventDefault();
-                            ed.save();
-                            xf_ed.$target.closest('form').submit();
-                            return false;
-                        }
-                        if (draft_timeout !== null) {
-                            clearTimeout(draft_timeout);
-                        }
-                        draft_timeout = setTimeout(handle_draft, 2500);
-                    });
                 }
 
                 let menus = {
