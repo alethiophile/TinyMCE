@@ -100,8 +100,8 @@
                                 ed.hide();
                                 xf_ed.$target.css("visibility", "visible").val(bbcode);
                                 let $richtext_button = $(`<button class="button button--primary tinymce_richtext_button"><span class="button-text">Rich text editor</span></button>`);
-                                $richtext_button.css('margin-right', '4px');
-                                xf_ed.$target.parent().find('button[type=submit]').before($richtext_button);
+                                $richtext_button.css('margin-top', '6px');
+                                xf_ed.$target.after($richtext_button);
                                 xf_ed.$target.closest('form').on('submit', reset_state);
                                 $richtext_button.click(function (e) {
                                     // for some reason if I don't do this then it submits the form and posts the reply (???)
@@ -125,7 +125,7 @@
                                 if (html !== null) {
                                     ed.setContent(html);
                                 }
-                                xf_ed.$target.parent().find('button.tinymce_richtext_button').remove();
+                                xf_ed.$target.closest('form').find('button.tinymce_richtext_button').remove();
                                 xf_ed.$target.closest('form').off('submit', reset_state);
                             }
 
