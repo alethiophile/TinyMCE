@@ -192,13 +192,13 @@
                                 ed.hide();
                                 xf_ed.$target.css('display', 'none');
                                 let $preview_div = $(`<div class="tinymce_preview_area"><h3>Preview:</h3><div class="inner_content"></div><hr></div>`);
-                                xf_ed.$target.parent().find('div.formButtonGroup').before($preview_div);
+                                xf_ed.$target.after($preview_div);
                                 $preview_div.find('.inner_content').css({
                                     'margin': '5px',
                                 }).html(html);
                                 let $edit_button = $(`<button class="button button--primary tinymce_edit_button"><span class="button-text">Return to editor</span></button>`);
-                                $edit_button.css('margin-right', '4px');
-                                xf_ed.$target.parent().find('button[type=submit]').before($edit_button);
+                                $edit_button.css('margin-top', '6px');
+                                $preview_div.after($edit_button);
                                 xf_ed.$target.closest('form').on('submit', hide_preview);
                                 $edit_button.click(function (e) {
                                     e.preventDefault();
