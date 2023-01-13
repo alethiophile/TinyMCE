@@ -152,6 +152,7 @@
 
                     ed.ui.registry.addButton('previewButton', {
                         text: 'Preview',
+                        icon: 'preview',
                         tooltip: 'Show a preview of your post',
                         onAction: function () {
                             function show_preview(html) {
@@ -222,6 +223,10 @@
                     });
                 }
 
+                let menus = {
+                    edit: { title: 'Edit', items: '' }
+                };
+
                 tinymce.init({
                     target: this.$target[0],
                     base_url: '/js/vendor/tinymce',
@@ -229,8 +234,9 @@
                     branding: false,
                     skin: mce_skin,
                     content_css: content_css,
-                    plugins: 'fullscreen wordcount',
-                    toolbar: 'bbCodeViewButton previewButton',
+                    plugins: 'fullscreen wordcount searchreplace',
+                    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bbCodeViewButton previewButton',
+                    // menu: menus,
                     setup: setup_editor
                 }).then((editors) => {
                     this.ed = editors[0];
