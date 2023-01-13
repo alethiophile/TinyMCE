@@ -18,6 +18,8 @@
    - probably good to somewhat imitate the existing QQ TinyMCE
  - [X] Choose TinyMCE skin according to style in use
    - can just use the 'styleType' style property, which is 'light' or 'dark'
+ - [ ] Set up element filtering properly
+   - need to ensure all formatting output by TinyMCE gets parsed properly by XF
 
 * Tests
 
@@ -30,3 +32,5 @@ Things that need testing after a change, that might be broken:
  - Reply link in post works to insert reply
  - Reply button on highlight works to insert reply
  - Switching between BBcode and rich-text editor works
+ - Preview and closing preview works
+ - editing posts works
