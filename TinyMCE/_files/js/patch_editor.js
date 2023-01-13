@@ -90,7 +90,7 @@
 
                     ed.ui.registry.addIcon(
                         'bbCodeView',
-                        '<svg width="24" height="24"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">[&nbsp;&nbsp;]</text></svg>'
+                        '<svg width="24" height="24"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-weight="950">[&nbsp;&nbsp;]</text></svg>'
                     );
                     ed.ui.registry.addButton('bbCodeViewButton', {
                         icon: 'bbCodeView',
