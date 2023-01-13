@@ -80,6 +80,7 @@
                 let mce_skin = style_mode == 'dark' ? 'oxide-dark' : 'oxide';
                 let content_css = style_mode == 'dark' ? 'dark' : 'default';
                 let xf_ed = this;
+                xf_ed.bbCodeView = false;
                 // let mce_skin = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
                 // let content_css = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
 
@@ -87,6 +88,12 @@
                     ed.on('ResizeEditor', function () {
                         XF.layoutChange();
                     });
+
+                    ed.bbCode = {
+                        getTextArea: function () {
+                            return xf_ed.$target;
+                        }
+                    };
 
                     ed.ui.registry.addIcon(
                         'bbCodeView',
@@ -115,6 +122,7 @@
                                     );
                                 });
                                 XF.layoutChange();
+                                xf_ed.bbCodeView = true;
                             }
 
                             function reset_state() {
@@ -129,6 +137,7 @@
                                 xf_ed.$target.closest('form').find('button.tinymce_richtext_button').remove();
                                 xf_ed.$target.closest('form').off('submit', reset_state);
                                 XF.layoutChange();
+                                xf_ed.bbCodeView = false;
                             }
 
                             let html = ed.getContent();
@@ -243,15 +252,25 @@
             },
 
             isBbCodeView_tinymce: function () {
-                return false;
+                return this.bbCodeView;
             },
 
-            insertContent_tinymce: function (content) {
-                this.ed.insertContent(content);
+            insertContent_tinymce: function (html, text) {
+                if (this.bbCodeView) {
+                    XF.insertIntoTextBox(this.$target, text);
+                }
+                else {
+                    this.ed.insertContent(html);
+                }
             },
 
-            replaceContent_tinymce: function (content) {
-                this.ed.setContent(content);
+            replaceContent_tinymce: function (html, text) {
+                if (this.bbCodeView) {
+                    XF.replaceIntoTextBox(this.$target, text);
+                }
+                else {
+                    this.ed.setContent(html);
+                }
             }
         };
         function add_dispatch(fn) {
