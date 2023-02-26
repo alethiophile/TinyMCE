@@ -262,9 +262,20 @@
                     view: { title: 'View', items: 'visualaid | previewButton fullscreen' },
                     insert: { title: 'Insert', items: 'link | hr ' },
                     format: { title: 'Format', items: 'bold italic underline strikethrough codeformat | styles blocks fontfamily fontsize align | forecolor | removeformat' },
-                    tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+                    tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | code wordcount' },
                 };
 
+                // this function processes text that's pasted in as rich-text,
+                // to remove styles that we probably don't want (namely color
+                // and font-family)
+
+                // the characteristic problem this solves is when someone pastes
+                // from google docs or wherever, and gets a huge block of text
+                // that's explicitly set to color: black and font-family: times
+                // or whatever; this tends not to display well
+
+                // this can be disabled (thus pasting all formatting) by
+                // enabling the "Paste all formatting" toggle in the edit menu
                 let paste_postprocess = (editor, args) => {
                     if (paste_process_state) {
                         console.log('skipping postprocess');
@@ -301,6 +312,9 @@
                     setup: setup_editor
                 }).then((editors) => {
                     this.ed = editors[0];
+
+                    // for some reason the formatter isn't set during the
+                    // setup_editor run, so we do this here instead
                     let formats_to_remove = ['pre', 'div', 'subscript', 'superscript'];
                     for (let i of formats_to_remove) {
                         this.ed.formatter.unregister(i);
@@ -317,8 +331,8 @@
                     this.blur_textarea();
                 }
                 else {
-                    // I'm not sure if this call is actually doing
-                    // anything, but the element does lose focus
+                    // I'm not sure if this call is actually doing anything, but
+                    // the element does lose focus
                     this.ed.getElement().blur();
                 }
             },
