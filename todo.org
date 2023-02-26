@@ -7,13 +7,15 @@
  - [ ] Figure out how attachments work (?)
  - [X] Add rich-text/BBcode switch
  - [X] Add preview function
- - [ ] Harmonize list of fonts
- - [ ] Redo font-size options to parse properly
- - [ ] Remove options that don't parse
-   - [ ] super/sub
-   - [ ] background color
-   - [ ] <pre>
- - [ ] test copy/paste with rich text
+ - [X] Harmonize list of fonts
+ - [X] Redo font-size options to parse properly
+ - [X] Remove options that don't parse
+   - [X] super/sub
+   - [X] background color
+   - [X] <pre>
+   - [X] line height
+ - [X] test copy/paste with rich text
+   - [X] set option for stripping screwy formats like color/font
  - [ ] Decide on final layout (menus y/n?)
    - probably good to somewhat imitate the existing QQ TinyMCE
  - [X] Choose TinyMCE skin according to style in use
@@ -34,3 +36,9 @@ Things that need testing after a change, that might be broken:
  - Switching between BBcode and rich-text editor works
  - Preview and closing preview works
  - editing posts works
+ - all functionality works in all editor contexts:
+   - page-bottom thread reply
+   - thread post edit
+   - new-thread load from forum
+   - dedicated new-thread page
+   - dedicated thread-reply page (?)

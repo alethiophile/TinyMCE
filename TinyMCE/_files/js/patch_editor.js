@@ -83,6 +83,7 @@
                 xf_ed.bbCodeView = false;
                 // let mce_skin = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
                 // let content_css = style_mode == 'dark' ? 'tinymce-5-dark' : 'tinymce-5';
+                let paste_process_state = false;
 
                 function setup_editor(ed) {
                     ed.on('ResizeEditor', function () {
@@ -183,7 +184,7 @@
                         },
                     });
 
-                    ed.ui.registry.addButton('previewButton', {
+                    let preview_config = {
                         text: 'Preview',
                         icon: 'preview',
                         tooltip: 'Show a preview of your post',
@@ -232,12 +233,50 @@
                                     });
                                 });
                         }
+                    };
+
+                    ed.ui.registry.addButton('previewButton', preview_config);
+                    ed.ui.registry.addMenuItem('previewButton', preview_config);
+
+                    let paste_plain_state = false;
+
+                    ed.on('PastePlainTextToggle', (ev) => {
+                        paste_plain_state = ev.state;
                     });
 
+                    ed.ui.registry.addToggleMenuItem('pasteallformats', {
+                        text: 'Paste all formatting',
+                        active: paste_process_state,
+                        onAction: () => {
+                            paste_process_state = !paste_process_state;
+                        },
+                        onSetup: (api) => {
+                            api.setActive(!paste_plain_state && paste_process_state);
+                            api.setEnabled(!paste_plain_state);
+                        },
+                    });
                 }
 
                 let menus = {
-                    edit: { title: 'Edit', items: '' }
+                    edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext pasteallformats | selectall | searchreplace' },
+                    view: { title: 'View', items: 'visualaid | previewButton fullscreen' },
+                    insert: { title: 'Insert', items: 'link | hr ' },
+                    format: { title: 'Format', items: 'bold italic underline strikethrough codeformat | styles blocks fontfamily fontsize align | forecolor | removeformat' },
+                    tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+                };
+
+                let paste_postprocess = (editor, args) => {
+                    if (paste_process_state) {
+                        console.log('skipping postprocess');
+                        return;
+                    }
+                    console.log(args);
+                    let $node = $(args.node);
+                    $node.
+                        css('color', '').css('font-family', '').
+                        find('*').
+                        css('color', '').css('font-family', '');
+                    args.node = $node[0];
                 };
 
                 tinymce.init({
@@ -247,12 +286,25 @@
                     branding: false,
                     skin: mce_skin,
                     content_css: content_css,
-                    plugins: 'fullscreen wordcount searchreplace',
+                    plugins: 'fullscreen wordcount searchreplace link',
                     toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bbCodeViewButton previewButton',
-                    // menu: menus,
+                    menubar: 'edit view insert format tools',
+                    menu: menus,
+                    link_title: false,
+                    link_target_list: false,
+                    block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6;',
+                    font_size_formats: '9px 10px 12px 15px 18px 22px 26px',
+                    font_family_formats: 'Arial=arial,helvetica,sans-serif; Book Antiqua=book antiqua,palatino; Courier New=courier new,courier; Georgia=georgia,palatino; Tahoma=tahoma,arial,helvetica,sans-serif; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva',
+                    style_formats_autohide: true,
+                    content_style: 'p { margin: 0; }',
+                    paste_postprocess: paste_postprocess,
                     setup: setup_editor
                 }).then((editors) => {
                     this.ed = editors[0];
+                    let formats_to_remove = ['pre', 'div', 'subscript', 'superscript'];
+                    for (let i of formats_to_remove) {
+                        this.ed.formatter.unregister(i);
+                    }
                 });
             },
 
@@ -261,9 +313,41 @@
             },
 
             blur_tinymce: function () {
-                // I'm not sure if this call is actually doing anything, but the
-                // element does lose focus
-                this.ed.getElement().blur();
+                if (this.bbCodeView) {
+                    this.blur_textarea();
+                }
+                else {
+                    // I'm not sure if this call is actually doing
+                    // anything, but the element does lose focus
+                    this.ed.getElement().blur();
+                }
+            },
+
+            focus_textarea: function () {
+                this.$target[0].focus();
+            },
+
+            focus_tinymce: function () {
+                if (this.bbCodeView) {
+                    this.focus_textarea();
+                }
+                else {
+                    this.ed.focus();
+                }
+            },
+
+            scrollToCursor_textarea: function () {
+                this.$target[0].blur();
+                this.$target[0].focus();
+            },
+
+            scrollToCursor_tinymce: function () {
+                if (this.bbCodeView) {
+                    this.scrollToCursor_textarea();
+                }
+                else {
+                    this.ed.selection.getNode().scrollIntoView(false);
+                }
             },
 
             isBbCodeView_textarea: function () {
@@ -272,6 +356,14 @@
 
             isBbCodeView_tinymce: function () {
                 return this.bbCodeView;
+            },
+
+            insertContent_textarea: function (html, text) {
+                XF.insertIntoTextBox(this.$target, text);
+            },
+
+            replaceContent_textarea: function (html, text) {
+                XF.replaceIntoTextBox(this.$target, text);
             },
 
             insertContent_tinymce: function (html, text) {
@@ -304,7 +396,8 @@
             };
         }
         let methods_to_patch =
-            ['blur', 'isBbCodeView', 'insertContent', 'replaceContent'];
+            ['blur', 'isBbCodeView', 'insertContent', 'replaceContent',
+             'focus', 'scrollToCursor'];
         for (let i of methods_to_patch) {
             add_dispatch(i)
         }
