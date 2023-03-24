@@ -36,6 +36,10 @@ Things that need testing after a change, that might be broken:
  - Switching between BBcode and rich-text editor works
  - Preview and closing preview works
  - editing posts works
+ - copy-paste works
+   - rich text copy-paste
+   - "paste all formatting" toggle
+   - "paste plain text" toggle
  - all functionality works in all editor contexts:
    - page-bottom thread reply
    - thread post edit
