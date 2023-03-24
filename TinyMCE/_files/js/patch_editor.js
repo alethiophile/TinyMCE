@@ -416,7 +416,7 @@
             add_dispatch(i)
         }
         ext_obj.__backup = backup;
-        XF.Element.extend('editor', ext_obj);
+        XF.Editor = XF.extend(XF.Editor, ext_obj);
     }
 
     console.log("patch_editor");
