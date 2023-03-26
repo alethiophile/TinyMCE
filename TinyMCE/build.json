@@ -2,5 +2,8 @@
     "additional_files": [
         "js/patch_editor.js",
         "js/vendor/tinymce"
+    ],
+    "minify": [
+        "js/patch_editor.js"
     ]
 }

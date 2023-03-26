@@ -1,13 +1,13 @@
 {
     "legacy_addon_id": "",
     "title": "TinyMCE Editor",
-    "description": "",
-    "version_id": 110,
-    "version_string": "0.0.1 Alpha",
-    "dev": "",
+    "description": "Configurably replace the Froala rich text editor with TinyMCE",
+    "version_id": 10010,
+    "version_string": "0.1.0",
+    "dev": "alethiophile",
     "dev_url": "",
     "faq_url": "",
-    "support_url": "",
+    "support_url": "https://github.com/alethiophile/TinyMCE",
     "extra_urls": [],
     "require": [],
     "icon": ""
