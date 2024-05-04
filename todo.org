@@ -22,6 +22,13 @@
    - can just use the 'styleType' style property, which is 'light' or 'dark'
  - [ ] Set up element filtering properly
    - need to ensure all formatting output by TinyMCE gets parsed properly by XF
+ - [-] Adapt table plugin for XF tables
+   - [X] Disable properties dialogs
+   - [X] ensure menus only show correct options
+   - [ ] add TH option in sub-toolbar
+ - [ ] Add options for various BB-codes
+   - [ ] spoiler
+   - [ ] quote
 
 * Tests
 

@@ -2,6 +2,12 @@
 
 !function($, window, document, _undefined)
 {
+    function get_bbcode_menu_items(ed) {
+        let items = {
+            
+        };
+        return items;
+    }
     let editor_config = null;
     function load_config() {
         console.log("checking config");
@@ -255,13 +261,36 @@
                             api.setEnabled(!paste_plain_state);
                         },
                     });
+
+                    ed.ui.registry.addNestedMenuItem('tableformat', {
+                        text: 'Table',
+                        icon: 'table',
+                        getSubmenuItems: () => [
+                            {
+                                type: 'nestedmenuitem',
+                                text: 'Row',
+                                getSubmenuItems: () => 'tableinsertrowbefore tableinsertrowafter tabledeleterow | tablecutrow tablecopyrow tablepasterowbefore tablepasterowafter',
+                            },
+                            {
+                                type: 'nestedmenuitem',
+                                text: 'Column',
+                                getSubmenuItems: () => 'tableinsertcolumnbefore tableinsertcolumnafter tabledeletecolumn | tablecutcolumn tablecopycolumn tablepastecolumnbefore tablepastecolumnafter',
+                            },
+                            {
+                                type: 'separator',
+                            },
+                            'deletetable'
+                        ],
+                    });
+
+                    let bbcode_items = get_bbcode_menu_items(ed);
                 }
 
                 let menus = {
                     edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext pasteallformats | selectall | searchreplace' },
                     view: { title: 'View', items: 'visualaid | previewButton fullscreen' },
-                    insert: { title: 'Insert', items: 'link | hr ' },
-                    format: { title: 'Format', items: 'bold italic underline strikethrough codeformat | styles blocks fontfamily fontsize align | forecolor | removeformat' },
+                    insert: { title: 'Insert', items: 'link inserttable | hr ' },
+                    format: { title: 'Format', items: 'bold italic underline strikethrough codeformat | tableformat | styles blocks fontfamily fontsize align | forecolor | removeformat' },
                     tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | code wordcount' },
                 };
 
@@ -297,16 +326,26 @@
                     branding: false,
                     skin: mce_skin,
                     content_css: content_css,
-                    plugins: 'fullscreen wordcount searchreplace link',
-                    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bbCodeViewButton previewButton',
+                    plugins: 'fullscreen wordcount searchreplace link table',
+                    toolbar: 'undo redo | styles fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | removeformat | hr link unlink table | alignleft aligncenter alignright alignjustify | bbCodeViewButton fullscreen previewButton',
+                    toolbar_mode: 'wrap',
+                    mobile: {
+                        toolbar_mode: 'wrap',
+                    },
                     menubar: 'edit view insert format tools',
                     menu: menus,
+                    contextmenu: 'link image',
                     link_title: false,
                     link_target_list: false,
                     block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6;',
                     font_size_formats: '9px 10px 12px 15px 18px 22px 26px',
                     font_family_formats: 'Arial=arial,helvetica,sans-serif; Book Antiqua=book antiqua,palatino; Courier New=courier new,courier; Georgia=georgia,palatino; Tahoma=tahoma,arial,helvetica,sans-serif; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva',
                     style_formats_autohide: true,
+                    table_appearance_options: false,
+                    table_advtab: false,
+                    table_cell_advtab: false,
+                    table_row_advtab: false,
+                    table_toolbar: 'tabledelete | tablerowheader | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
                     content_style: 'p { margin: 0; }',
                     paste_postprocess: paste_postprocess,
                     setup: setup_editor
