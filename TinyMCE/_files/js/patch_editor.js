@@ -61,7 +61,7 @@
                     return;
                 }
                 let disp = 'startInit_' + ed;
-                return this[disp]();
+                return this[disp].apply(this, arguments);
             },
 
             startInit_textarea: function () {
